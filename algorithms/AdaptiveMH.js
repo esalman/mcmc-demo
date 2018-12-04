@@ -12,6 +12,8 @@ MCMC.registerAlgorithm('AdaptiveMH', {
     self.sigma = 1;
     self.adaptStride = 10;
     self.adaptProbability = 0.9;
+    self.steps = 0;
+    self.rejects = 0;
   },
 
   reset: function(self) {
@@ -28,6 +30,9 @@ MCMC.registerAlgorithm('AdaptiveMH', {
   },
 
   step: function(self, visualizer) {
+
+    self.steps++
+
     var lastIndex = self.chain.length - 1;
     // update proposal covariance using rank-1 covariance update
     if (self.chain.length % self.adaptStride == 0) {
@@ -48,6 +53,8 @@ MCMC.registerAlgorithm('AdaptiveMH', {
     } else {
       self.chain.push(self.chain.last());
       visualizer.queue.push({type: 'reject', proposal: proposal});
+      self.rejects++
+      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
     }
   }
 

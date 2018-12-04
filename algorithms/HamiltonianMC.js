@@ -28,8 +28,6 @@ MCMC.registerAlgorithm('HamiltonianMC', {
   step: function(self, visualizer) {
 
     self.steps++
-    console.log(Math.round(100*self.rejects / self.steps, 2))
-    document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
 
     var q0 = self.chain.last(),
         p0 = MultivariateNormal.getSample(self.dim);
@@ -53,7 +51,9 @@ MCMC.registerAlgorithm('HamiltonianMC', {
     } else {
       self.chain.push(q0.copy());
       visualizer.queue.push({type: 'reject', proposal: q});
+      
       self.rejects++
+      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
     }
   }
 

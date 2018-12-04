@@ -10,6 +10,8 @@ MCMC.registerAlgorithm('RandomWalkMH', {
 
   init: function(self) {
     self.sigma = 1;
+    self.steps = 0;
+    self.rejects = 0;
   },
 
   reset: function(self) {
@@ -22,6 +24,8 @@ MCMC.registerAlgorithm('RandomWalkMH', {
   },
 
   step: function(self, visualizer) {
+    self.steps++
+
     var proposalDist    = new MultivariateNormal(self.chain.last(), eye(self.dim).scale(self.sigma * self.sigma));
     var proposal        = proposalDist.getSample();
     var logAcceptRatio  = self.logDensity(proposal) - self.logDensity(self.chain.last());
@@ -32,6 +36,8 @@ MCMC.registerAlgorithm('RandomWalkMH', {
     } else {
       self.chain.push(self.chain.last());
       visualizer.queue.push({type: 'reject', proposal: proposal});
+      self.rejects++
+      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
     }
   },
 

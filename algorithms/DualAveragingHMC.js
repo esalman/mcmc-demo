@@ -13,6 +13,8 @@ MCMC.registerAlgorithm('DualAveragingHMC', {
     self.lambda = 1.6;
     self.delta = 0.65;
     self.M_adapt = 100;
+    self.steps = 0;
+    self.rejects = 0;
 
     viz.animateProposal = false;
 
@@ -65,6 +67,8 @@ MCMC.registerAlgorithm('DualAveragingHMC', {
   },
 
   step: function(self, visualizer) {
+    self.steps++
+
     var r0 = MultivariateNormal.getSample(self.dim);
     var theta = self.chain.last().copy();
     var r = r0.copy();
@@ -90,6 +94,9 @@ MCMC.registerAlgorithm('DualAveragingHMC', {
     } else {
       self.chain.push(self.chain.last().copy());
       visualizer.queue.push({type: 'reject', proposal: theta});
+
+      self.rejects++
+      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
     }
     var m = self.chain.length;
     if (m <= self.M_adapt) {

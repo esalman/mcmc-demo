@@ -12,6 +12,8 @@ MCMC.registerAlgorithm('H2MC', {
     self.sigma = 1.0;
     self.L = Math.PI / 2;
     self.epsilon = 1e-8;
+    self.steps = 0;
+    self.rejects = 0;
     /**
      * Based on C++ implementation by Tzu-Mao Li
      * https://github.com/BachiLi/dpt
@@ -77,6 +79,8 @@ MCMC.registerAlgorithm('H2MC', {
   },
 
   step: function(self, visualizer) {
+    self.steps++
+
     var x = self.chain.last();
     var proposalDist = self.computeGaussian(x, self.gradLogDensity(x), self.hessLogDensity(x));
     var y = proposalDist.getSample();
@@ -87,6 +91,9 @@ MCMC.registerAlgorithm('H2MC', {
     } else {
       self.chain.push(x.copy());
       visualizer.queue.push({type: 'reject', proposal: y});
+
+      self.rejects++
+      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
     }
   }
 
