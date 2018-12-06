@@ -11,8 +11,6 @@ MCMC.registerAlgorithm('HamiltonianMC', {
   init: function(self) {
     self.leapfrogSteps = 37;
     self.dt = 0.1;
-    self.steps = 0;
-    self.rejects = 0;
   },
 
   reset: function(self) {
@@ -26,9 +24,6 @@ MCMC.registerAlgorithm('HamiltonianMC', {
   },
 
   step: function(self, visualizer) {
-
-    self.steps++
-
     var q0 = self.chain.last(),
         p0 = MultivariateNormal.getSample(self.dim);
 
@@ -51,10 +46,10 @@ MCMC.registerAlgorithm('HamiltonianMC', {
     } else {
       self.chain.push(q0.copy());
       visualizer.queue.push({type: 'reject', proposal: q});
-      
-      self.rejects++
-      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
+      this.rejects++
     }
+    this.steps++
+    document.getElementById('rejectionRatioSpan').innerHTML = Math.round( 100 * this.rejects / this.steps )+'%'
   }
 
 });

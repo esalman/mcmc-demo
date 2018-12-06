@@ -10,8 +10,6 @@ MCMC.registerAlgorithm('MALA', {
 
   init: function(self) {
     self.sigma = 0.5;
-    self.steps = 0;
-    self.rejects = 0;
   },
 
   reset: function(self) {
@@ -24,8 +22,6 @@ MCMC.registerAlgorithm('MALA', {
   },
 
   step: function(self, visualizer) {
-    self.steps++
-
     var gradient    = self.gradLogDensity(self.chain.last());
     var Zdist       = new MultivariateNormal(zeros(self.dim), eye(self.dim).scale(self.sigma * self.sigma));
     var Z           = Zdist.getSample();
@@ -52,9 +48,9 @@ MCMC.registerAlgorithm('MALA', {
     } else {
       self.chain.push(self.chain.last());
       visualizer.queue.push({type: 'reject', proposal: proposal.copy()});
-
-      self.rejects++
-      document.getElementById('info').innerHTML = 'Rejection ratio = '+Math.round(100*self.rejects / self.steps, 2)+'%'
+      this.rejects++
     }
+    this.steps++
+    document.getElementById('rejectionRatioSpan').innerHTML = Math.round( 100 * this.rejects / this.steps )+'%'
   }
 });

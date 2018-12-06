@@ -1,7 +1,7 @@
 'use strict';
 
 function Simulation() {
-  this.mcmc = {initialized: false, hasAlgorithm: false, hasTarget: false, dim: 2};
+  this.mcmc = {initialized: false, hasAlgorithm: false, hasTarget: false, dim: 2, steps: 0, rejects: 0};
   this.delay = 250;
   this.tweeningDelay = 0;
   this.autoplay = true;
@@ -137,6 +137,8 @@ Simulation.prototype.computeContours = function(logDensity) {
 Simulation.prototype.reset = function() {
   this.mcmc.reset(this.mcmc);
   this.visualizer.resize();
+  this.mcmc.steps = 0
+  this.mcmc.rejects = 0
 };
 
 Simulation.prototype.step = function() {
